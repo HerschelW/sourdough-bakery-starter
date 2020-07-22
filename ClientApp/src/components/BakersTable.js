@@ -8,7 +8,8 @@ class BakerTable extends Component {
         successMessage: null,
         loading: true,
         newBaker: {
-            name: ''
+            name: '',
+            emailAddress: '',
         }
     }
 
@@ -55,6 +56,7 @@ class BakerTable extends Component {
                     <tr>
                         <th>ID</th>
                         <th>Baker Name</th>
+                        <th>Email</th>
                         <th>Bread Count</th>
                         <th></th>
                     </tr>
@@ -64,6 +66,7 @@ class BakerTable extends Component {
                         <tr key={`baker-row-${baker.id}`}>
                             <td>{baker.id}</td>
                             <td>{baker.name}</td>
+                            <td>{baker.emailAddress}</td>
                             <td>{baker.breadCount}</td>
                             <td><button onClick={() => this.deleteBaker(baker.id)} className='btn btn-sm btn-danger'>Delete</button></td>
                         </tr>
@@ -89,6 +92,12 @@ class BakerTable extends Component {
                         onChange={(event) => this.setState({ newBaker: { ...this.state.newBaker, name: event.target.value } })}
                         className={'form-control col-3'}
                     />
+                    <input
+                        placeholder='Baker Email'
+                        value={this.state.newBaker.emailAddress}
+                        onChange={(event) => this.setState({ newBaker: { ...this.state.newBaker, emailAddress: event.target.value } })}
+                        className={'form-control col-3'}
+                    />
                     <button onClick={this.submitBaker} className={'btn btn-primary col-2'}>Add Baker</button>
                 </div>
                 {contents}
@@ -108,7 +117,7 @@ class BakerTable extends Component {
     submitBaker = async () => {
         try {
             await axios.post('api/baker', this.state.newBaker);
-            this.setState({ newBaker: { ...this.state.newBaker, name: '' } });
+            this.setState({ newBaker: { ...this.state.newBaker, name: '', emailAddress: '' } });
             this.props.fetchBakers();
             this.setState({
                 errors: [],
