@@ -35,7 +35,8 @@ namespace dotnet_bakery
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration => {
+            services.AddSpaStaticFiles(configuration =>
+            {
                 configuration.RootPath = "ClientApp/build";
             });
         }
