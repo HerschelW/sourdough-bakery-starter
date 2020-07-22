@@ -10,5 +10,6 @@ namespace dotnet_bakery.Models
         // that are found in the Baker class. This is the full link between our pure C#
         // model in Baker.cs and the magoc of translation to Postgres.
         public DbSet<Baker> Bakers { get; set; }
+        public DbSet<BreadInventory> BreadInventory { get; set; }
     }
 }

@@ -17,41 +17,46 @@ namespace dotnet_bakery.Controllers
       _context = context;
     }
 
-    // GET http://localhost:5000/api/Baker/intTest
+    // GET http://localhost:5000/api/baker/intTest
     [HttpGet("intTest")]
     public int getInt()
     {
       return 1;
     }
+
     // our root GET:
-    // http://localhost:5000/api/baker
+    // GET http://localhost:5000/api/baker/
     [HttpGet]
     public List<Baker> GetBakers()
     {
-      return _context.Bakers.ToList();
+      return _context.Bakers.Include(b => b.myBreads).ToList();
     }
+
+    // iActionResult lets us return the object itself
+    // wrapped inside of some http status code (like Created, Ok, etc)
     [HttpPost]
     public IActionResult MakeBaker([FromBody] Baker baker)
     {
       _context.Add(baker); // add to our local database layer
       _context.SaveChanges(); // actually save to the database
-      // return Ok(baker); // TODO: Change from 200 OK to 201 CREATED
+                              // return Ok(baker); // CreatedAtAction will return a 201 created
       return CreatedAtAction(nameof(GetBaker), new { id = baker.id }, baker);
     }
-    // GET on http://localhost:5000/api/baker/1
+
+    // GET http://localhost/api/baker/1
     [HttpGet("{id}")] // express: /:id
     public IActionResult GetBaker(int id)
     {
-      Baker baker = _context.Bakers.SingleOrDefault(baker => baker.id == id);
-      if (baker == null){
+      Baker baker = _context.Bakers.Include(b => b.myBreads).SingleOrDefault(baker => baker.id == id);
+      if (baker == null)
+      {
         return NotFound(
-          new { error = $"Error, baker with id {id} not found" }
+            new { error = $"Error, baker with id {id} not found" }
         );
       }
       return Ok(baker);
     }
 
-    // DELETE on http://localhost:5000/api/baker/1
     // DELETE http://localhost/api/baker/1
     [HttpDelete("{id}")]
     public IActionResult deleteBaker(int id)
@@ -68,24 +73,25 @@ namespace dotnet_bakery.Controllers
       return NoContent();
     }
 
+    // PUT http://localhost:5000/api/baker/1 
+    // WITH http body that includes the full updated baker object
     [HttpPut("{id}")]
     public IActionResult updateBaker(int id, [FromBody] Baker baker)
     {
+      // make sure that the id of the path matches the baker object that was passed in
       if (id != baker.id)
       {
         return BadRequest(
-          new { error = $"Error, baker {id} must match route id" }
+            new { error = $"Error, baker id must match route id" }
         );
-
       }
 
-      // make sure  we are trying to update a REAL baker
+      // make sure we are trying to update a REAL baker
       if (!_context.Bakers.Any(b => b.id == id))
       {
         return NotFound(
-          new { error = $"Error, baker id must match route id" }
+            new { error = $"Error, baker with id {id} not found" }
         );
-
       }
 
       // looks ok! update the baker in the application context
@@ -93,6 +99,5 @@ namespace dotnet_bakery.Controllers
       _context.SaveChanges();
       return Ok(baker);
     }
-
   }
 }

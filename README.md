@@ -7,6 +7,7 @@ This is a simple `dotnet new react` project with a few things added:
   - Controllers and Model stubs have been created in anticipation of in-class work.
 
 To get the API hooked up:
+  - `dotnet tool install --global dotnet-ef`
   - Get your models set up properly in `Models/`
   - Add your HTTP methods in the relevant `Controllers/` file.
   - Add your models to `Models/ApplicationContext` to make the database-aware
@@ -17,37 +18,50 @@ This document will be updated.
 
 BAKER
 -----
-id (integer)
+
+id (int, primary key)
 name (string)
+emailAddress (string, required, email address format)
 
-REST API:
-----------
+REST API
+--------
 
+```
 GET /bakers/
 HTTP BODY: NONE
-{
-  {
-    "id": 1,
-    "name": "jared"
-  },
-  {
-    "id": 2,
-    "name": "bob"
-  }
-}
+[
+    {
+        "id": 1,
+        "name": "blaine",
+        "emailAddress": "me@email.com"
+    },
+    {
+        "id": 2,
+        "name": "levi",
+        "emailAddress": "me@levi.com"
+    }
+]
+
 POST /bakers/
 HTTP BODY:
 {
-  "name": "jared" 
+    "name": "blaine",
+    "emailAddress": "me@email.com"
 }
-RESPONSE: 201 CREATED, with the actual baker object returned
+RESPONSE: 201 CREATED OR 400 BAD REQUEST (for invalid data)
+{
+    "id": 1,
+    "name": "blaine",
+    "emailAddress": "me@email.com"
+}
 
 GET /bakers/1
 HTTP BODY: NONE
-RESPONSE: 200 OK
+RESPONSE: 200 OK OR 404 if id is invalid
 {
-  "id": 1,
-  "name": "jared",
+    "id": 1,
+    "name": "blaine",
+    "emailAddress": "me@email.com"
 }
 
 DELETE /bakers/1
@@ -57,28 +71,36 @@ RESPONSE: 204 NO-CONTENT
 PUT /bakers/1
 HTTP BODY:
 {
-  "id": 1,
-  "name": "jared"
+    "id": 1,
+    "name": "blaine booher",
+    "emailAddress": "blaine@email.com"
 }
-RESPONSE 200 OK
+RESPONSE: 200 OK OR 400 BAD REQUEST (for invalid data)
 {
-  "id": 1,
-  "name": "jared"
+    "id": 1,
+    "name" "blaine booher",
+    "emailAddress": "blaine@email.com"
 }
+```
 
 BREAD INVENTORY
--------------------
+---------------
 
-
+id (int, primary key)
+name (string): name of the bread
+inventory (int): how many there are
+breadType (enum string): What type of bread it is: sourdough, focassia, rye
+bakerId (int, foreign key): who baked this bread?
 
 
 What are our steps:
-------------------
-0. We'll turn on postgres support in startup.cs
-1. we'll create our baker class; we'll also add attributes that help us define validations
-2. we'll hook up our baker class to the database
-  a. Adding it to the applicationContext
-  b. Add a migration
-  c. Run the migration
-3. We'll write the controller methods (making sure the controller knows about ApplicationContext)
-4. Test our controler methods with postman
+-------------------
+
+0. [x] We'll turn on postgres support in Startup.cs
+1. [x] We'll create our Baker class; we'll also add attributes that help us define validations
+2. [ ] We'll HOOK UP our Baker class to the database
+    a. [x] Adding it to the ApplicationContext
+    b. [x] Add a migration
+    c. [x] Run the migration
+3. [ ] We'll write the controller methods (making sure the controller knows about ApplicationContext)
+4. Test our controller methods with postman.
